@@ -21,9 +21,6 @@
   <ItemGroup>
     <ClCompile Include="1D FDTD Simulation.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="matplotlibcpp.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -79,6 +76,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\lions\AppData\Local\Programs\Python\Python310\include;C:\Users\lions\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Lion\AppData\Local\Programs\Python\Python311\include;C:\Users\Lion\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\include\numpy;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -117,6 +117,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\Lion\AppData\Local\Programs\Python\Python311\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
