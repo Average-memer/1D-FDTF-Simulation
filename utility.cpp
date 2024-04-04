@@ -2,9 +2,12 @@
 #include <cmath>
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "constants.h"
 
+using std::cout;
+using std::endl;
 //a simple gaussian source. We later extract the frequency response by calculating the FFT of the Transmitted Signal.
 float gaussianSource(float t, float t0 = 0, float tau = minTau, float a = 1) {
 	//t is the running time 
@@ -39,4 +42,27 @@ std::vector<float> calculateUpdateCoefficients(const std::vector<float>& inputAr
 		updateCoefficients[i] = denom / inputArray[i];
 	}
 	return updateCoefficients;
+}
+
+//print information about the simulation domain, runtime, and constants
+void printInformation() {
+	cout << "simulation domain size: " << domainSize << "m, divided into " << cellCount << " cells." << endl;
+	cout << "stepsize: " << ds << "m, timestep: " << dt << "s." << endl;
+	cout << "max. frequency: " << maxF << "Hz, min Wavelength: " << lambdaMin << "m." << endl;
+	cout << "approximate number of iterations: " << steps * cellCount * 2 << ", approximate filesize: " << steps * cellCount * 8 *1/1000 << "kilobytes." << endl;
+}
+
+void printProgress(int iteration) {
+	int barWidth = 70;
+
+	cout << "[";
+	float progress = iteration / float(steps);
+	int pos = floor(barWidth * progress);
+	for (int i = 0; i < barWidth; ++i) {
+		if (i < pos) cout << "=";
+		else if (i == pos) cout << ">";
+		else cout << " ";
+	}
+	cout << "] " << int(progress * 100.0) << " %\r";
+	cout.flush();
 }

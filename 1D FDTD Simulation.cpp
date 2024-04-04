@@ -9,7 +9,6 @@
 #include "utility.h"
 #include "constants.h"
 
-
 //boundary condition variables
 float H3, H2, H1 = 0;
 float E3, E2, E1 = 0;
@@ -34,6 +33,8 @@ int main()
 
 	std::ostream_iterator<float> EIterator(EField, ",");
 	std::ostream_iterator<float> HIterator(HField, ",");
+
+	printInformation();
 	//main loop
 	for (int i = 0; i < steps; i++)
 	{
@@ -61,7 +62,13 @@ int main()
 			std::copy(Hx.begin(), Hx.end(), HIterator);
 			HField << "\n";
 		}
-		Ey[10] += gaussianSource(i * dt);
+		//add the source 
+		Ey[10] += gaussianSource(i * dt, 0, minTau, 1);
+
+		if (i % 10 == 0)
+		{
+			printProgress(i);
+		}
 	}
 	EField.close();
 	HField.close();
