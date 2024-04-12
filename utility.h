@@ -9,3 +9,4 @@ std::vector<float> calculateUpdateCoefficients(const std::vector<float>& inputAr
 float gaussianSource(float t, float t0, float tau, float a);
 void printInformation();
 void printProgress(int iteration);
+void saveToFile(std::vector<float>& vecToSave, std::string filename, std::string seperator);

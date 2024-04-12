@@ -14,7 +14,7 @@ const float minFeatureSize = 5e-1; //5mm, minimum physical feature size we can r
 const int NDres = 2; //amount of cells to resolve the smallest feature with
 const int timeStepsPerPulse = 10; //amount of timesteps we want our Pulse to be resolved by?
 const float propagationTime = domainSize / c0; //worst case time for a wave to propagate from one side to the other
-const float maxF = 1e6; //maximum frequency we care about
+const float maxF = 1e3; //maximum frequency we care about
 const float lambdaMin = 1 / maxF; //smallest wavelength we care about
 const float dsMin = fmin((lambdaMin * timeStepsPerPulse) / nmax, minFeatureSize / NDres); //the minimum spacing is given by the min of either the highest frequency or the smallest structure
 const float minTau = 1 / (maxF * PI); //minimum width of all gaussian sources
@@ -22,3 +22,7 @@ const float dt = minTau / (timeStepsPerPulse); //amount of time that passes betw
 const int cellCount = ceil(domainSize / dsMin); //number of cells we divide the physical space into
 const float ds = cellCount / domainSize; //the spacing such that the domain is made up of an integer number of cells smaller or equal to the minimum size.
 const int maxArrayIndex = cellCount - 1; //index of the final element of the grid
+
+//program settings
+const int saveInterval = 5; //Save fields every ith iteration
+const int saveResolution = 5; //Only save every nth cell of the fields

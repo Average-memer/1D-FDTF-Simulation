@@ -26,6 +26,13 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="utility.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FieldVisualizer.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="E.txt" />
+    <Text Include="H.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

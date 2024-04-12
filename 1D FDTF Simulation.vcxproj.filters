@@ -30,4 +30,11 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FieldVisualizer.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="E.txt" />
+    <Text Include="H.txt" />
+  </ItemGroup>
 </Project>

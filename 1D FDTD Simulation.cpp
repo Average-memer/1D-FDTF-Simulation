@@ -55,17 +55,15 @@ int main()
 		}
 		E3 = E2; E2 = E1; E1 = Ey[maxArrayIndex];
 
-		if (i % 2 == 0)
+		if (i % saveInterval == 0)
 		{
-			std::copy(Ey.begin(), Ey.end(), EIterator);
-			EField << "\n";
-			std::copy(Hx.begin(), Hx.end(), HIterator);
-			HField << "\n";
+			saveToFile(Ey, "E.txt", ",");
+			saveToFile(Hx, "H.txt", ",");
 		}
 		//add the source 
 		Ey[10] += gaussianSource(i * dt, 0, minTau, 1);
 
-		if (i % 10 == 0)
+		if (i % saveInterval == 0)
 		{
 			printProgress(i);
 		}

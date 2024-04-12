@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "constants.h"
 
@@ -65,4 +66,30 @@ void printProgress(int iteration) {
 	}
 	cout << "] " << int(progress * 100.0) << " %\r";
 	cout.flush();
+}
+
+//save the entered vector to a file
+
+void saveToFile(std::vector<float>& vecToSave, std::string filename, std::string seperator = ",") {
+	std::ofstream FILE("./"+filename, std::ios::app);
+
+	for (size_t index = 0; index < vecToSave.size(); index = index + saveResolution)
+	{
+		if (index <= vecToSave.size())
+		{
+			FILE << vecToSave.at(index);
+			//don't write a comma on the final entry
+			if (index + saveResolution < vecToSave.size())
+			{
+				FILE << seperator;
+			}
+		}
+		else
+		{
+			FILE << vecToSave.back();
+			break;
+		}
+	}
+	FILE << "\n";
+	FILE.close();
 }
