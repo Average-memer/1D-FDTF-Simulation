@@ -10,13 +10,13 @@
 using std::cout;
 using std::endl;
 //a simple gaussian source. We later extract the frequency response by calculating the FFT of the Transmitted Signal.
-float gaussianSource(float t, float t0 = 0, float tau = minTau, float a = 1) {
+double gaussianSource(double t, double t0 = 0, double tau = minTau, double a = 1) {
 	//t is the running time 
 	//t0 is the time offset
 	//tau is the width of the pulse, the higher the wider
 	if (t0 < 3 * minTau)
 	{
-		float t0 = 3 * minTau;
+		double t0 = 3 * minTau;
 	}
 	if (tau < minTau)
 	{
@@ -26,7 +26,7 @@ float gaussianSource(float t, float t0 = 0, float tau = minTau, float a = 1) {
 }
 
 template <typename T>
-void printVector(std::vector<T> vec, std::string seperator, bool newLine) {
+void printVector(std::vector<T>& vec, std::string seperator, bool newLine){
 	for (auto i : vec) {
 		std::cout << i << seperator;
 	}
@@ -35,10 +35,30 @@ void printVector(std::vector<T> vec, std::string seperator, bool newLine) {
 	}
 }
 
+
+void printVectorDouble(std::vector<double>& vec, std::string seperator, bool newLine){
+for (auto i : vec) {
+		std::cout << i << seperator;
+	}
+	if (newLine) {
+		std::cout << std::endl;
+	}
+}
+
+void printVectorDouble(const std::vector<double>& vec, std::string seperator, bool newLine){
+for (auto i : vec) {
+	std::cout << i << seperator;
+}
+if (newLine) {
+	std::cout << std::endl;
+}
+}
+
 //create update coefficients to normalize the fields during the update equations
-std::vector<float> calculateUpdateCoefficients(const std::vector<float>& inputArray) {
-	std::vector<float> updateCoefficients(inputArray.size(), 1.);
-	const float denom = c0 * dt;
+std::vector<double> calculateUpdateCoefficients(const std::vector<double>& inputArray) {
+	std::vector<double> updateCoefficients(inputArray.size(), 1.);
+	const double denom = c0 * dt;
+	std::cout << denom << std::endl;
 	for (int i = 0; i < inputArray.size(); i++) {
 		updateCoefficients[i] = denom / inputArray[i];
 	}
@@ -57,7 +77,7 @@ void printProgress(int iteration) {
 	int barWidth = 70;
 
 	cout << "[";
-	float progress = iteration / float(steps);
+	double progress = iteration / double(steps);
 	int pos = floor(barWidth * progress);
 	for (int i = 0; i < barWidth; ++i) {
 		if (i < pos) cout << "=";
@@ -70,7 +90,7 @@ void printProgress(int iteration) {
 
 //save the entered vector to a file
 
-void saveToFile(std::vector<float>& vecToSave, std::string filename, std::string seperator = ",") {
+void saveToFile(const std::vector<double>& vecToSave, std::string filename, std::string seperator = ",") {
 	std::ofstream FILE("./"+filename, std::ios::app);
 
 	for (size_t index = 0; index < vecToSave.size(); index = index + saveResolution)

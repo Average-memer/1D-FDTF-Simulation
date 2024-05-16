@@ -10,20 +10,22 @@
 #include "constants.h"
 
 //boundary condition variables
-float H3, H2, H1 = 0;
-float E3, E2, E1 = 0;
+double H3, H2, H1 = 0;
+double E3, E2, E1 = 0;
+
+// TODO: fix exploding values.
 
 //set epsilon and mu to be 1, aka vacuum.
-const std::vector<float> permeability(cellCount, 1.);
-const std::vector<float> permissivity(cellCount, 1.);
+const std::vector<double> permeability(cellCount, 1.);
+const std::vector<double> permissivity(cellCount, 1.);
 
 //modified E and H coefficients
-const std::vector<float> mEy = calculateUpdateCoefficients(permeability);
-const std::vector<float> mHx = calculateUpdateCoefficients(permissivity);
+const std::vector<double> mHx = calculateUpdateCoefficients(permissivity);
+const std::vector<double> mEy = calculateUpdateCoefficients(permeability);
 
 //E and H field vectors. These store the field strength at each point in space, given by the unit cell size
-std::vector<float> Ey(cellCount, 0.);
-std::vector<float> Hx(cellCount, 0.);
+std::vector<double> Ey(cellCount, 0.);
+std::vector<double> Hx(cellCount, 0.);
 
 int main()
 {
@@ -31,9 +33,8 @@ int main()
 	std::ofstream EField("./E.txt");
 	std::ofstream HField("./H.txt");
 
-	std::ostream_iterator<float> EIterator(EField, ",");
-	std::ostream_iterator<float> HIterator(HField, ",");
-
+	std::ostream_iterator<double> EIterator(EField, ",");
+	std::ostream_iterator<double> HIterator(HField, ",");
 	printInformation();
 	//main loop
 	for (int i = 0; i < steps; i++)
@@ -55,6 +56,7 @@ int main()
 		}
 		E3 = E2; E2 = E1; E1 = Ey[maxArrayIndex];
 
+		//only save every so often to conserve space
 		if (i % saveInterval == 0)
 		{
 			saveToFile(Ey, "E.txt", ",");

@@ -1,38 +1,43 @@
-import matplotlib as plt
-import numpy as np
-import matplotlib.animation as plta
 import pandas as pd
+import matplotlib.pyplot as plt
+import time
 
-# Function to read data from a CSV file
-def read_data(filename):
-    df = pd.read_csv(filename, sep=",", header=None)
-    return df
-
-def main():
-    # Read data from files
-    data1 = read_data("H.txt")
-    data2 = read_data("E.txt")
-    print(data1)
-    print(data2)
-    """
-    # Create figure and axes
+# Function to plot rows from two dataframes
+def plot_rows(df1, df2):
+    plt.ion()  # Enable interactive mode
     fig, ax = plt.subplots()
-    line1, = ax.plot([], [], label='E Field')
-    line2, = ax.plot([], [], label='H Field')
-    lines = [line1, line2]
 
-    # Setting the axes limits
-    ax.set_xlim(0, max(data1.shape[1], data2.shape[1]) - 1)
-    ax.set_ylim(min(np.min(data1), np.min(data2)), max(np.max(data1), np.max(data2)))
-
-    # Adding legend
-    ax.legend()
-
-    # Creating the animation
-    ani = plta.FuncAnimation(fig, update, frames=min(len(data1), len(data2)),
-                                  fargs=(lines, data1, data2), blit=True)
-
-    # Show plot
+    for i in range(len(df1)):
+        # Clear the plot for the next iteration
+        ax.clear()
+        
+        # Plot the rows up to the current index
+        ax.plot(df1.iloc[i], label='File 1')
+        ax.plot(df2.iloc[i], label='File 2')
+        
+        # Add legend and labels
+        ax.legend()
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Values')
+        ax.set_title('Row-wise Plotting of CSV Data')
+        
+        # Draw and pause for a brief moment
+        plt.draw()
+        plt.pause(0.1)
+    
+    plt.ioff()  # Disable interactive mode
     plt.show()
-    """
-main()
+
+# Read CSV files
+file1 = 'E.txt'
+file2 = 'H.txt'
+
+df1 = pd.read_csv(file1)
+df2 = pd.read_csv(file2)
+
+# Ensure both files have the same length
+if len(df1) != len(df2):
+    raise ValueError("The two CSV files must have the same number of rows.")
+
+# Plot rows
+plot_rows(df1, df2)
