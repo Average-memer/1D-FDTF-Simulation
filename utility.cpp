@@ -10,14 +10,11 @@
 using std::cout;
 using std::endl;
 //a simple gaussian source. We later extract the frequency response by calculating the FFT of the Transmitted Signal.
-double gaussianSource(double t, double t0 = 0, double tau = minTau, double a = 1) {
+double gaussianSource(double t, double tau = minTau, double a = 1) {
 	//t is the running time 
 	//t0 is the time offset
 	//tau is the width of the pulse, the higher the wider
-	if (t0 < 3 * minTau)
-	{
-		double t0 = 3 * minTau;
-	}
+	double t0 = 6 * minTau;	
 	if (tau < minTau)
 	{
 		tau = minTau;
@@ -25,8 +22,9 @@ double gaussianSource(double t, double t0 = 0, double tau = minTau, double a = 1
 	return a * exp(-pow((t - t0) / tau, 2));
 }
 
+//print a non-const vector of any type
 template <typename T>
-void printVector(std::vector<T>& vec, std::string seperator, bool newLine){
+void printVectorNonConst(std::vector<T>& vec, std::string seperator, bool newLine){
 	for (auto i : vec) {
 		std::cout << i << seperator;
 	}
@@ -35,9 +33,9 @@ void printVector(std::vector<T>& vec, std::string seperator, bool newLine){
 	}
 }
 
-
+//print a vector of doubles
 void printVectorDouble(std::vector<double>& vec, std::string seperator, bool newLine){
-for (auto i : vec) {
+for (double i : vec) {
 		std::cout << i << seperator;
 	}
 	if (newLine) {
@@ -45,8 +43,9 @@ for (auto i : vec) {
 	}
 }
 
+//print a const vector of doubles
 void printVectorDouble(const std::vector<double>& vec, std::string seperator, bool newLine){
-for (auto i : vec) {
+for (double i : vec) {
 	std::cout << i << seperator;
 }
 if (newLine) {
@@ -58,11 +57,21 @@ if (newLine) {
 std::vector<double> calculateUpdateCoefficients(const std::vector<double>& inputArray) {
 	std::vector<double> updateCoefficients(inputArray.size(), 1.);
 	const double denom = c0 * dt;
-	std::cout << denom << std::endl;
 	for (int i = 0; i < inputArray.size(); i++) {
-		updateCoefficients[i] = denom / inputArray[i];
+		updateCoefficients[i] = denom / (inputArray[i]);
 	}
 	return updateCoefficients;
+}
+
+std::vector<double> precomputeSource()
+{
+	//precompute the source terms to speed up the main loop ever so slightly
+	std::vector<double> sourceArray(steps);
+	for (size_t i = 0; i < steps; i++)
+	{
+		sourceArray[i] = gaussianSource(i * dt, minTau, 1);
+	}
+	return sourceArray;
 }
 
 //print information about the simulation domain, runtime, and constants
@@ -70,7 +79,7 @@ void printInformation() {
 	cout << "simulation domain size: " << domainSize << "m, divided into " << cellCount << " cells." << endl;
 	cout << "stepsize: " << ds << "m, timestep: " << dt << "s." << endl;
 	cout << "max. frequency: " << maxF << "Hz, min Wavelength: " << lambdaMin << "m." << endl;
-	cout << "approximate number of iterations: " << steps * cellCount * 2 << ", approximate filesize: " << steps * cellCount * 8 *1/1000 << "kilobytes." << endl;
+	cout << "Number of iterations: " << steps << ", approximate filesize: " << steps * cellCount * 8 *1/1000 << "kilobytes." << endl;
 }
 
 void printProgress(int iteration) {

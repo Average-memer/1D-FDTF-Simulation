@@ -10,8 +10,8 @@
 #include "constants.h"
 
 //boundary condition variables
-double H3, H2, H1 = 0;
-double E3, E2, E1 = 0;
+double H2, H1 = 0;
+double E2, E1 = 0;
 
 // TODO: fix exploding values.
 
@@ -27,6 +27,9 @@ const std::vector<double> mEy = calculateUpdateCoefficients(permeability);
 std::vector<double> Ey(cellCount, 0.);
 std::vector<double> Hx(cellCount, 0.);
 
+//precompute source 
+std::vector<double> source = precomputeSource();
+
 int main()
 {
 	//open files
@@ -35,26 +38,27 @@ int main()
 
 	std::ostream_iterator<double> EIterator(EField, ",");
 	std::ostream_iterator<double> HIterator(HField, ",");
+
 	printInformation();
 	//main loop
 	for (int i = 0; i < steps; i++)
 	{
-		//update H from E		
+		//update H from E	
+		H2 = H1; H1 = Hx[0];
 		for (size_t j = 0; j < cellCount - 1; j++)
 		{
 			Hx[j] = Hx[j] + mHx[j] * ((Ey[j + 1] - Ey[j]) / ds);
 		}
 		//boundary condition
-		Hx[maxArrayIndex] = Hx[maxArrayIndex] + mHx[maxArrayIndex] * ((E3 - Ey[maxArrayIndex]) / ds);
-		H3 = H2; H2 = H1; H1 = Hx[0];
-
+		Hx[maxArrayIndex] = Hx[maxArrayIndex] + mHx[maxArrayIndex] * ((E2 - Ey[maxArrayIndex]) / ds);
+		
 		//update E from H
-		Ey[0] = Ey[0] + mEy[0] * ((Hx[0] - H3)/ ds);
+		Ey[0] = Ey[0] + mEy[0] * ((Hx[0] - H2)/ ds);
+		E2 = E1; E1 = Ey[maxArrayIndex];
 		for (size_t k = 1; k < cellCount; k++)
 		{
 			Ey[k] = Ey[k] + mEy[k] * ((Hx[k] - Hx[k - 1]) / ds);
 		}
-		E3 = E2; E2 = E1; E1 = Ey[maxArrayIndex];
 
 		//only save every so often to conserve space
 		if (i % saveInterval == 0)
@@ -63,7 +67,7 @@ int main()
 			saveToFile(Hx, "H.txt", ",");
 		}
 		//add the source 
-		Ey[10] += gaussianSource(i * dt, 0, minTau, 1);
+		Ey[sourceInjectionPoint] += source[i];
 
 		if (i % saveInterval == 0)
 		{

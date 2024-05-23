@@ -1,6 +1,9 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import time
+
+maxY = 1e-13
 
 # Function to plot rows from two dataframes
 def plot_rows(df1, df2):
@@ -11,19 +14,21 @@ def plot_rows(df1, df2):
         # Clear the plot for the next iteration
         ax.clear()
         
-        # Plot the rows up to the current index
-        ax.plot(df1.iloc[i], label='File 1')
-        ax.plot(df2.iloc[i], label='File 2')
+        # Plot the rows at the current index
+        ax.plot(df1.iloc[i], label='Electric field')
+        ax.plot(df2.iloc[i], label='Magnetic field')
         
         # Add legend and labels
         ax.legend()
-        ax.set_xlabel('Time')
-        ax.set_ylabel('Values')
-        ax.set_title('Row-wise Plotting of CSV Data')
+        ax.set_xlabel('z-axis')
+        ax.set_ylabel('Field strength')
+        #ax.set_xticks(np.linspace(0,183,20, endpoint=True))
+        ax.set_ylim(bottom=-maxY, top=maxY)
+        ax.set_title('E and H fields')
         
         # Draw and pause for a brief moment
         plt.draw()
-        plt.pause(0.1)
+        plt.pause(0.05)
     
     plt.ioff()  # Disable interactive mode
     plt.show()
