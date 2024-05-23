@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 #include "constants.h"
 
@@ -44,7 +45,7 @@ for (double i : vec) {
 }
 
 //print a const vector of doubles
-void printVectorDouble(const std::vector<double>& vec, std::string seperator, bool newLine){
+void printVectorDoubleConst(const std::vector<double>& vec, std::string seperator, bool newLine){
 for (double i : vec) {
 	std::cout << i << seperator;
 }
@@ -74,6 +75,29 @@ std::vector<double> precomputeSource()
 	return sourceArray;
 }
 
+//calculate the index of refraction at each grid cell. 
+std::vector<double> calculateRefractiveIndexes(const std::vector<double>& permittivity, const std::vector<double>& permeability, bool approximatePermeabilityAsOne)
+{
+	std::vector<double> indexes(permittivity.size());
+	if (approximatePermeabilityAsOne)
+	{
+		#pragma omp parallel for
+		for (size_t i = 0; i < permittivity.size(); i++)
+		{
+			indexes[i] = sqrt(permittivity[i]);
+		}
+	}
+	else
+	{
+		#pragma omp parallel for
+		for (size_t i = 0; i < permittivity.size(); i++)
+		{
+			indexes[i] = sqrt(permittivity[i] * permeability[i]);
+		}
+	}
+	return indexes;
+}
+
 //print information about the simulation domain, runtime, and constants
 void printInformation() {
 	cout << "simulation domain size: " << domainSize << "m, divided into " << cellCount << " cells." << endl;
@@ -98,7 +122,6 @@ void printProgress(int iteration) {
 }
 
 //save the entered vector to a file
-
 void saveToFile(const std::vector<double>& vecToSave, std::string filename, std::string seperator = ",") {
 	std::ofstream FILE("./"+filename, std::ios::app);
 
@@ -121,4 +144,47 @@ void saveToFile(const std::vector<double>& vecToSave, std::string filename, std:
 	}
 	FILE << "\n";
 	FILE.close();
+}
+
+//return the amount of milliseconds that passed since the UNIX-epoch.
+uint64_t timeSinceEpochMillisec()
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
+template<typename T>
+inline double findExtremum(const std::vector<T>& data, bool maximum, bool returnIndex)
+{
+	//if there are multiple of the same entry it will return the index of the LATEST occurance of that value
+	//initialize the comparison threshold as the minimum double when looking for the max, and the maximum double when looking for the min.
+	double threshold = maximum ? DBL_MIN : DBL_MAX;
+	int extremeIndex = 0; //index of the most extreme value so far
+	//maximum search
+	if (maximum)
+	{
+		for (size_t i; i < data.size(); i++) {
+			if (data[i] > threshold)
+			{
+				//if the current value is the biggest one yet we record it and its index.
+				threshold = data[i];
+				extremeIndex = i;
+			}
+		}
+	}
+	else //we are looking for the minimum
+	{
+		for (size_t i; i < data.size(); i++) {
+			if (data[i] < threshold)
+			{
+				//if the current value is the biggest one yet we record it and its index.
+				threshold = data[i];
+				extremeIndex = i;
+			}
+		}
+	}
+	if (returnIndex)
+	{
+		return extremeIndex;
+	}
+	return threshold;
 }

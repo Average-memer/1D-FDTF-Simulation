@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <iterator>
+#include <chrono>
 
 #include "utility.h"
 #include "constants.h"
@@ -13,14 +14,8 @@
 double H2, H1 = 0;
 double E2, E1 = 0;
 
-// TODO: fix exploding values.
-
-//set epsilon and mu to be 1, aka vacuum.
-const std::vector<double> permeability(cellCount, 1.);
-const std::vector<double> permissivity(cellCount, 1.);
-
 //modified E and H coefficients
-const std::vector<double> mHx = calculateUpdateCoefficients(permissivity);
+const std::vector<double> mHx = calculateUpdateCoefficients(permittivity);
 const std::vector<double> mEy = calculateUpdateCoefficients(permeability);
 
 //E and H field vectors. These store the field strength at each point in space, given by the unit cell size
@@ -41,6 +36,7 @@ int main()
 
 	printInformation();
 	//main loop
+	uint64_t loopStart = timeSinceEpochMillisec();
 	for (int i = 0; i < steps; i++)
 	{
 		//update H from E	
@@ -60,20 +56,21 @@ int main()
 			Ey[k] = Ey[k] + mEy[k] * ((Hx[k] - Hx[k - 1]) / ds);
 		}
 
-		//only save every so often to conserve space
+		//only save or print progress every so often to conserve space and improve performance
 		if (i % saveInterval == 0)
 		{
-			saveToFile(Ey, "E.txt", ",");
-			saveToFile(Hx, "H.txt", ",");
+			if (saveResults)
+			{
+				saveToFile(Ey, "E.txt", ",");
+				saveToFile(Hx, "H.txt", ",");
+			}
+			printProgress(i);
 		}
 		//add the source 
 		Ey[sourceInjectionPoint] += source[i];
-
-		if (i % saveInterval == 0)
-		{
-			printProgress(i);
-		}
 	}
+	uint64_t loopDuration = timeSinceEpochMillisec() - loopStart;
+	std::cout << "\nCalculation took " << (loopDuration / 1000.0) << "s to complete." << std::endl;
 	EField.close();
 	HField.close();
 	return 0;
