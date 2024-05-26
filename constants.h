@@ -10,13 +10,9 @@ inline  double PI = atan(1) * 4;
 //TODO: fix this mess v
 
 //setup the simulation properties
-//set epsilon and mu to be 1, aka vacuum. This is where you would include your device
-const std::vector<double> permeability(cellCount, 1.);
-const std::vector<double> permittivity(cellCount, 1.);
-const std::vector<double> indexOfRefraction = calculateRefractiveIndexes(permittivity, permeability, true);
-
-inline const double nmax = findExtremum(indexOfRefraction, true, false); //maximum index of refraction
-inline const double nmin = findExtremum(indexOfRefraction, false, false); //minimum index of refraction
+//calculating this at runtime introduces a circular dependancy
+inline const double nmax = 1;//findExtremum(indexOfRefraction, true, false); //maximum index of refraction
+inline const double nmin = 1;//findExtremum(indexOfRefraction, false, false); //minimum index of refraction
 inline const size_t sourceInjectionPoint = 20; //defines the TF/SF boundary. This is on the TF side.
 
 //define minimum sizes
@@ -40,6 +36,7 @@ inline const size_t steps = ceil(simulationTime / dt); //how long the simulation
 inline const size_t maxArrayIndex = cellCount - 1; //index of the final element of the grid
 
 //program settings
-inline bool saveResults = false; //wether or not to save field properties during iteration
-inline int saveInterval = 10; //Save fields every ith iteration
-inline int saveResolution = 2; //Only save every nth cell of the fields
+inline const bool saveResults = false; //wether or not to save field properties during iteration
+inline const int saveInterval = 10; //Save fields every ith iteration
+inline const int saveResolution = 2; //Only save every nth cell of the fields
+inline const double correctionFactor = 0.75; //How much the filesize estimation overshoots

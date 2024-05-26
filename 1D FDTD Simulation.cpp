@@ -14,6 +14,11 @@
 double H2, H1 = 0;
 double E2, E1 = 0;
 
+//set epsilon and mu to be 1, aka vacuum. This is where you would include your device
+const std::vector<double> permeability(cellCount, 1.);
+const std::vector<double> permittivity(cellCount, 1.);
+const std::vector<double> indexOfRefraction = calculateRefractiveIndexes(permittivity, permeability, true);
+
 //modified E and H coefficients
 const std::vector<double> mHx = calculateUpdateCoefficients(permittivity);
 const std::vector<double> mEy = calculateUpdateCoefficients(permeability);
@@ -23,7 +28,8 @@ std::vector<double> Ey(cellCount, 0.);
 std::vector<double> Hx(cellCount, 0.);
 
 //precompute source 
-std::vector<double> source = precomputeSource();
+std::vector<double> Ey_Source = precomputeElectricSource();
+std::vector<double> Hx_Source = precomputeMagneticSource();
 
 int main()
 {
@@ -67,7 +73,7 @@ int main()
 			printProgress(i);
 		}
 		//add the source 
-		Ey[sourceInjectionPoint] += source[i];
+		Ey[sourceInjectionPoint] += Ey_Source[i];
 	}
 	uint64_t loopDuration = timeSinceEpochMillisec() - loopStart;
 	std::cout << "\nCalculation took " << (loopDuration / 1000.0) << "s to complete." << std::endl;
