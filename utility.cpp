@@ -1,3 +1,4 @@
+#pragma once
 #include "utility.h"
 #include <cmath>
 #include <vector>
@@ -7,21 +8,10 @@
 #include <chrono>
 
 #include "constants.h"
+#include "mathematics.h"
 
 using std::cout;
 using std::endl;
-//a simple gaussian source. We later extract the frequency response by calculating the FFT of the Transmitted Signal.
-double gaussianSource(double t, double tau = minTau, double a = 1) {
-	//t is the running time 
-	//t0 is the time offset
-	//tau is the width of the pulse, the higher the wider
-	double t0 = 6 * minTau;	
-	if (tau < minTau)
-	{
-		tau = minTau;
-	}
-	return a * exp(-pow((t - t0) / tau, 2));
-}
 
 //print a non-const vector of any type
 template <typename T>
@@ -54,49 +44,6 @@ if (newLine) {
 }
 }
 
-//create update coefficients to normalize the fields during the update equations
-std::vector<double> calculateUpdateCoefficients(const std::vector<double>& inputArray) {
-	std::vector<double> updateCoefficients(inputArray.size(), 1.);
-	const double denom = c0 * dt;
-	for (int i = 0; i < inputArray.size(); i++) {
-		updateCoefficients[i] = denom / (inputArray[i]);
-	}
-	return updateCoefficients;
-}
-
-std::vector<double> precomputeSource()
-{
-	//precompute the source terms to speed up the main loop ever so slightly
-	std::vector<double> sourceArray(steps);
-	for (size_t i = 0; i < steps; i++)
-	{
-		sourceArray[i] = gaussianSource(i * dt, minTau, 1);
-	}
-	return sourceArray;
-}
-
-//calculate the index of refraction at each grid cell. 
-std::vector<double> calculateRefractiveIndexes(const std::vector<double>& permittivity, const std::vector<double>& permeability, bool approximatePermeabilityAsOne)
-{
-	std::vector<double> indexes(permittivity.size());
-	if (approximatePermeabilityAsOne)
-	{
-		#pragma omp parallel for
-		for (size_t i = 0; i < permittivity.size(); i++)
-		{
-			indexes[i] = sqrt(permittivity[i]);
-		}
-	}
-	else
-	{
-		#pragma omp parallel for
-		for (size_t i = 0; i < permittivity.size(); i++)
-		{
-			indexes[i] = sqrt(permittivity[i] * permeability[i]);
-		}
-	}
-	return indexes;
-}
 
 //print information about the simulation domain, runtime, and constants
 void printInformation() {
@@ -150,41 +97,4 @@ void saveToFile(const std::vector<double>& vecToSave, std::string filename, std:
 uint64_t timeSinceEpochMillisec()
 {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-}
-
-template<typename T>
-inline double findExtremum(const std::vector<T>& data, bool maximum, bool returnIndex)
-{
-	//if there are multiple of the same entry it will return the index of the LATEST occurance of that value
-	//initialize the comparison threshold as the minimum double when looking for the max, and the maximum double when looking for the min.
-	double threshold = maximum ? DBL_MIN : DBL_MAX;
-	int extremeIndex = 0; //index of the most extreme value so far
-	//maximum search
-	if (maximum)
-	{
-		for (size_t i; i < data.size(); i++) {
-			if (data[i] > threshold)
-			{
-				//if the current value is the biggest one yet we record it and its index.
-				threshold = data[i];
-				extremeIndex = i;
-			}
-		}
-	}
-	else //we are looking for the minimum
-	{
-		for (size_t i; i < data.size(); i++) {
-			if (data[i] < threshold)
-			{
-				//if the current value is the biggest one yet we record it and its index.
-				threshold = data[i];
-				extremeIndex = i;
-			}
-		}
-	}
-	if (returnIndex)
-	{
-		return extremeIndex;
-	}
-	return threshold;
 }

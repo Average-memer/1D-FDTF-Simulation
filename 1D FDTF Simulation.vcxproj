@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1D FDTD Simulation.cpp" />
+    <ClCompile Include="mathematics.cpp" />
     <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h" />
+    <ClInclude Include="mathematics.h" />
     <ClInclude Include="utility.h" />
   </ItemGroup>
   <ItemGroup>

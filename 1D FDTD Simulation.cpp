@@ -9,21 +9,11 @@
 
 #include "utility.h"
 #include "constants.h"
+#include "mathematics.h"
 
 //boundary condition variables
 double H2, H1 = 0;
 double E2, E1 = 0;
-
-//modified E and H coefficients
-const std::vector<double> mHx = calculateUpdateCoefficients(permittivity);
-const std::vector<double> mEy = calculateUpdateCoefficients(permeability);
-
-//E and H field vectors. These store the field strength at each point in space, given by the unit cell size
-std::vector<double> Ey(cellCount, 0.);
-std::vector<double> Hx(cellCount, 0.);
-
-//precompute source 
-std::vector<double> source = precomputeSource();
 
 int main()
 {
@@ -33,6 +23,10 @@ int main()
 
 	std::ostream_iterator<double> EIterator(EField, ",");
 	std::ostream_iterator<double> HIterator(HField, ",");
+
+	//initialize E and H field vectors. These store the field strength at each point in space, given by the unit cell size
+	std::vector<double> Ey(cellCount, 0.);
+	std::vector<double> Hx(cellCount, 0.);
 
 	printInformation();
 	//main loop
