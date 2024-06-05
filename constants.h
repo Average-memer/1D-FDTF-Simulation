@@ -56,6 +56,7 @@ const std::vector<double> mEy = calculateUpdateCoefficients(permeability);
 inline const std::vector<double> source = precomputeSource();
 
 //program settings
-inline bool saveResults = false; //wether or not to save field properties during iteration
-inline int saveInterval = 10; //Save fields every ith iteration
-inline int saveResolution = 2; //Only save every nth cell of the fields
+inline const bool saveResults = false; //wether or not to save field properties during iteration
+inline const int saveInterval = 10; //Save fields every ith iteration
+inline const int saveResolution = 2; //Only save every nth cell of the fields
+inline const double correctionFactor = 0.75; //How much the filesize estimation overshoots

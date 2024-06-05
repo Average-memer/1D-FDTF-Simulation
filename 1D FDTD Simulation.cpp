@@ -61,7 +61,7 @@ int main()
 			printProgress(i);
 		}
 		//add the source 
-		Ey[sourceInjectionPoint] += source[i];
+		Ey[sourceInjectionPoint] += Ey_Source[i];
 	}
 	uint64_t loopDuration = timeSinceEpochMillisec() - loopStart;
 	std::cout << "\nCalculation took " << (loopDuration / 1000.0) << "s to complete." << std::endl;
