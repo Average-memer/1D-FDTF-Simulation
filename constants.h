@@ -17,7 +17,7 @@ const std::vector<double> devicePermeability(testLength, 1.);
 const std::vector<double> devicePermittivity(testLength, 1.);
 
 //we can do these before scaling because the values themself don't change
-const std::vector<double> indexOfRefraction = calculateRefractiveIndexes(devicePermittivity, devicePermeability, true); //IoR at every point of my device
+inline const std::vector<double> indexOfRefraction = calculateRefractiveIndexes(devicePermittivity, devicePermeability, true); //IoR at every point of my device
 inline const double nmax = findExtremum(indexOfRefraction, true, false); //maximum index of refraction
 inline const double nmin = findExtremum(indexOfRefraction, false, false); //minimum index of refraction
 
@@ -53,7 +53,8 @@ const std::vector<double> mHx = calculateUpdateCoefficients(permittivity);
 const std::vector<double> mEy = calculateUpdateCoefficients(permeability);
 
 //precompute source 
-inline const std::vector<double> source = precomputeSource();
+inline const std::vector<double> EySource = precomputeElectricSource();
+inline const std::vector<double> HxSource = precomputeMagneticSource();
 
 //program settings
 inline const bool saveResults = false; //wether or not to save field properties during iteration

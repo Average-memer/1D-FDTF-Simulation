@@ -123,3 +123,28 @@ double findExtremum(const std::vector<T>& data, bool maximum, bool returnIndex)
 	}
 	return threshold;
 }
+
+std::vector<double> precomputeElectricSource()
+{
+	//precompute the source terms to speed up the main loop ever so slightly
+	std::vector<double> sourceArray(steps);
+	for (size_t i = 0; i < steps; i++)
+	{
+		sourceArray[i] = gaussianSource(i * dt, minTau, 1);
+	}
+	return sourceArray;
+}
+
+std::vector<double> precomputeMagneticSource(double epsilon_r_src, double mu_r_src)
+{
+	//see page 12 of learning from 1D-FDTD
+	const double amplitude = -sqrt(epsilon_r_src / mu_r_src);
+	//delay through one half grid cell + half a time step. The delay is needed because Ey and Hx exist at different points in space.
+	const double delay = (sqrt(epsilon_r_src * mu_r_src) * ds) / (2 * c0) + dt / 2;
+	std::vector<double> sourceArray(steps);
+	for (size_t i = 0; i < steps; i++)
+	{
+		sourceArray[i] = amplitude * gaussianSource(i * dt + delay, minTau, 1);
+	}
+	return sourceArray;
+}
