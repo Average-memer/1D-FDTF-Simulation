@@ -39,6 +39,8 @@ int main()
 		{
 			Hx[j] = Hx[j] + mHx[j] * ((Ey[j + 1] - Ey[j]) / ds);
 		}
+		//add magnetic field source term
+		Hx[SIP - 1] = Hx[SIP - 1] - (mHx[SIP - 1] / ds) * EySource[SIP];
 		//boundary condition
 		Hx[maxArrayIndex] = Hx[maxArrayIndex] + mHx[maxArrayIndex] * ((E2 - Ey[maxArrayIndex]) / ds);
 		
@@ -49,6 +51,8 @@ int main()
 		{
 			Ey[k] = Ey[k] + mEy[k] * ((Hx[k] - Hx[k - 1]) / ds);
 		}
+		//add electric source
+		Ey[SIP] = Ey[SIP] - (mEy[SIP] / ds) * HxSource[SIP - 1];
 
 		//only save or print progress every so often to conserve space and improve performance
 		if (i % saveInterval == 0)
@@ -60,8 +64,6 @@ int main()
 			}
 			printProgress(i);
 		}
-		//add the source 
-		Ey[sourceInjectionPoint] += EySource[i];
 	}
 	uint64_t loopDuration = timeSinceEpochMillisec() - loopStart;
 	std::cout << "\nCalculation took " << (loopDuration / 1000.0) << "s to complete." << std::endl;

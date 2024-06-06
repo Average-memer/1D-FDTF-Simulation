@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <conio.h>
 
 #include "constants.h"
 #include "mathematics.h"
@@ -44,37 +45,20 @@ if (newLine) {
 }
 }
 
-
-
-//calculate the index of refraction at each grid cell. 
-std::vector<double> calculateRefractiveIndexes(const std::vector<double>& permittivity, const std::vector<double>& permeability, bool approximatePermeabilityAsOne)
-{
-	std::vector<double> indexes(permittivity.size());
-	if (approximatePermeabilityAsOne)
-	{
-		#pragma omp parallel for
-		for (size_t i = 0; i < permittivity.size(); i++)
-		{
-			indexes[i] = sqrt(permittivity[i]);
-		}
+//print information about the simulation domain, runtime, and constants
+void printInformation() {
+	if (!saveResults) {
+		cout << "saving results to disk is disabled! press key to continue" << endl;
+		_getch(); //wait for key press to start simulation
+		cout << "Number of iterations: " << steps << endl;
 	}
 	else
 	{
-		#pragma omp parallel for
-		for (size_t i = 0; i < permittivity.size(); i++)
-		{
-			indexes[i] = sqrt(permittivity[i] * permeability[i]);
-		}
+		cout << "Number of iterations: " << steps << ", approximate filesize: " << (saveResults ? (steps / saveResolution) * (cellCount / saveInterval) * sizeof(double) * 2 * correctionFactor / 1000 : 0) << "kilobytes." << endl;
 	}
-	return indexes;
-}
-
-//print information about the simulation domain, runtime, and constants
-void printInformation() {
 	cout << "simulation domain size: " << domainSize << "m, divided into " << cellCount << " cells." << endl;
-	cout << "stepsize: " << ds << "m, timestep: " << dt << "s." << endl;
+	cout << "cell size: " << ds << "m, timestep: " << dt << "s." << endl;
 	cout << "max. frequency: " << maxF << "Hz, min Wavelength: " << lambdaMin << "m." << endl;
-	cout << "Number of iterations: " << steps << ", approximate filesize: " << (saveResults ? (steps / saveResolution) * (cellCount / saveInterval) * sizeof(double) * 2 * correctionFactor / 1000 : 0) << "kilobytes." << endl;
 }
 
 void printProgress(int iteration) {
