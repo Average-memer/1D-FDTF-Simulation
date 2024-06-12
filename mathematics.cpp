@@ -39,9 +39,7 @@ std::vector<double> calculateUpdateCoefficients(const std::vector<double>& input
 	return updateCoefficients;
 }
 
-
 //calculate the index of refraction at each grid cell. 
-
 std::vector<double> calculateRefractiveIndexes(const std::vector<double>& permittivity, const std::vector<double>& permeability, bool approximatePermeabilityAsOne)
 {
 	std::vector<double> indexes(permittivity.size());
@@ -73,10 +71,13 @@ std::vector<double> upscaleVector(const std::vector<double>& input, const int ne
 		return input;
 	}
 	std::vector<double> upscaled(newSize);
+	double indexInInput = 0;
 
-	for (int i = 1; i < newSize; i++)
+	//iterate over the output array. For each entry we compute how far along the array we are and map that number to an entry in the input array.
+	#pragma omp parallel for
+	for (int i = 0; i < newSize; i++)
 	{
-		int indexInInput = round((i / newSize) * inputLength);
+		indexInInput = floor((i / (float)newSize) * inputLength);
 		std::cout << "i: " << i << ", indexInInput: " << indexInInput << " ,newSize: " << newSize << std::endl;
 		upscaled[i] = input[indexInInput];
 	}
@@ -99,7 +100,7 @@ std::vector<double> precomputeMagneticSource(double epsilon_r_src, double mu_r_s
 	//see page 12 of learning from 1D-FDTD
 	const double amplitude = -sqrt(epsilon_r_src / mu_r_src);
 	//delay through one half grid cell + half a time step. The delay is needed because Ey and Hx exist at different points in space.
-	const double delay = (sqrt(epsilon_r_src * mu_r_src) * ds) / (2 * c0) + dt / 2;
+	const double delay = ((sqrt(epsilon_r_src * mu_r_src) * ds) / (2 * c0)) + (dt / 2);
 	std::vector<double> sourceArray(steps);
 	for (size_t i = 0; i < steps; i++)
 	{

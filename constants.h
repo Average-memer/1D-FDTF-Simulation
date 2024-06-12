@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include "utility.h"
 #include "mathematics.h"
 //physical constants
@@ -15,7 +16,7 @@ inline  double PI = atan(1) * 4;
 const inline int testLength = 100;
 const std::vector<double> devicePermeability(testLength, 1.);
 const std::vector<double> devicePermittivity(testLength, 1.);
-inline const size_t sourceInjectionPoint = 10; //defines the TF/SF boundary. This is on the TF side. This is in terms of the device array. Will be scaled.
+inline const int sourceInjectionPoint = 10; //defines the TF/SF boundary. This is on the TF side. This is in terms of the device array. Will be scaled.
 
 
 //we can do these before scaling because the values themself don't change
@@ -24,17 +25,17 @@ inline const double nmax = findExtremum(indexOfRefraction, true, false); //maxim
 inline const double nmin = findExtremum(indexOfRefraction, false, false); //minimum index of refraction
 
 //define minimum sizes
-inline const double domainSize = 10; //size of the simulation domain in m. 
+inline const double domainSize = 2; //size of the simulation domain in m. 
 inline const double dmin = 2e-1; //minimum physical feature size we can resolve in m. This is the width of one element of the device arrays
 inline const int Nd = 4; //amount of cells to resolve the smallest feature with
-inline const double maxF = 5e7; //maximum frequency we care about
+inline const double maxF = 1e9; //maximum frequency we care about
 inline const int Nlambda = 10; //amount of cells to resolve the smallest wavelength
 
 //derived values
 //cell sizing and count
 inline const double lambdaMin = c0 / (maxF * nmax); //smallest wavelength we care about
 inline const double dsMin = fmin(lambdaMin / Nlambda, dmin / Nd); //the minimum spacing is given by the min of either the highest frequency or the smallest structure
-inline const size_t cellCount = ceil(domainSize / dsMin); //number of cells needed to satisfy size requirements from frequency and spatial resolution. We will upscale the device to this size.
+inline const int cellCount = ceil(domainSize / dsMin); //number of cells needed to satisfy size requirements from frequency and spatial resolution. We will upscale the device to this size.
 inline const double ds = domainSize / cellCount; //the spacing such that the domain is made up of an integer number of cells equal to the minimum size.
 
 //time step and iteration count
@@ -50,7 +51,7 @@ inline const double deltaF = 1 / (dt * steps); //frequency resolution of the Fou
 
 //array indexes
 inline const size_t maxArrayIndex = cellCount - 1; //index of the final element of the grid
-inline const size_t SIP = sourceInjectionPoint * (cellCount / devicePermeability.size()); //Source injection point in the scaled simulation array
+inline const int SIP = (int)std::clamp((double)sourceInjectionPoint * (cellCount / devicePermeability.size()), 1.0, DBL_MAX); //Source injection point in the scaled simulation array
 
 //scale arrays to new cellcounts.
 inline const std::vector<double> permeability = upscaleVector(devicePermeability, cellCount); //the actual array we want to run our simulation on.
@@ -61,7 +62,7 @@ inline const std::vector<double> mEy = calculateUpdateCoefficients(permeability)
 
 //precompute source 
 inline const std::vector<double> EySource = precomputeElectricSource();
-inline const std::vector<double> HxSource = precomputeMagneticSource();
+inline const std::vector<double> HxSource = precomputeMagneticSource(permeability[sourceInjectionPoint, permittivity[sourceInjectionPoint]]);
 
 //program settings
 inline const bool saveResults = true; //wether or not to save field properties during iteration

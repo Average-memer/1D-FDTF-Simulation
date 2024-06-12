@@ -51,7 +51,7 @@ int main()
 		{
 			Ey[k] = Ey[k] + mEy[k] * ((Hx[k] - Hx[k - 1]) / ds);
 		}
-		//add electric source
+		//add electric field source
 		Ey[SIP] = Ey[SIP] - (mEy[SIP] / ds) * HxSource[SIP - 1];
 
 		//only save or print progress every so often to conserve space and improve performance
@@ -65,6 +65,7 @@ int main()
 			printProgress(i);
 		}
 	}
+	//timing, logging and closing iostreams
 	uint64_t loopDuration = timeSinceEpochMillisec() - loopStart;
 	std::cout << "\nCalculation took " << (loopDuration / 1000.0) << "s to complete." << std::endl;
 	EField.close();
