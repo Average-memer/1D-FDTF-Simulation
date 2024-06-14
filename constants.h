@@ -3,11 +3,11 @@
 #include "utility.h"
 #include "mathematics.h"
 //physical constants
-inline  double epsilon0 = 8.854187817e-12; //electric permissivity of vacuum
-inline  double mu0 = 1.25663706e-6; //magnetic permeability of vacuum
-inline  double normalisation = sqrt(mu0 / epsilon0); //normalize E and H to have the same order of magnitude
-inline  int c0 = 299792458; //speed of light in vacuum
-inline  double PI = atan(1) * 4; 
+inline const double epsilon0 = 8.854187817e-12; //electric permissivity of vacuum
+inline const double mu0 = 1.25663706e-6; //magnetic permeability of vacuum
+inline const double normalisation = sqrt(mu0 / epsilon0); //normalize E and H to have the same order of magnitude
+inline const int c0 = 299792458; //speed of light in vacuum
+inline const double PI = atan(1) * 4; 
 
 //TODO: fix this mess v
 
