@@ -28,6 +28,9 @@ int main()
 	std::vector<double> Ey(cellCount, 0.);
 	std::vector<double> Hx(cellCount, 0.);
 
+	//saveToFile(EySource, "EySource.txt", ",");
+	//saveToFile(HxSource, "HxSource.txt", ",");
+
 	printInformation();
 	//main loop
 	uint64_t loopStart = timeSinceEpochMillisec();
@@ -41,6 +44,7 @@ int main()
 		}
 		//add magnetic field source term
 		Hx[SIP - 1] = Hx[SIP - 1] - (mHx[SIP - 1] / ds) * EySource[SIP];
+
 		//boundary condition
 		Hx[maxArrayIndex] = Hx[maxArrayIndex] + mHx[maxArrayIndex] * ((E2 - Ey[maxArrayIndex]) / ds);
 		

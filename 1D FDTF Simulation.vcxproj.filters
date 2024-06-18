@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FieldVisualizer.py" />
+    <None Include="plotSources.py" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="E.txt" />

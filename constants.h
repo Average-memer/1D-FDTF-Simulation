@@ -62,7 +62,7 @@ inline const std::vector<double> mEy = calculateUpdateCoefficients(permeability)
 
 //precompute source 
 inline const std::vector<double> EySource = precomputeElectricSource();
-inline const std::vector<double> HxSource = precomputeMagneticSource(permeability[sourceInjectionPoint, permittivity[sourceInjectionPoint]]);
+inline const std::vector<double> HxSource = precomputeMagneticSource(permeability[sourceInjectionPoint], permittivity[sourceInjectionPoint]);
 
 //program settings
 inline const bool saveResults = true; //wether or not to save field properties during iteration
