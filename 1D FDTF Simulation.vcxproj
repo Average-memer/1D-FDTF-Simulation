@@ -31,6 +31,7 @@
   <ItemGroup>
     <None Include="FieldVisualizer.py" />
     <None Include="plotSources.py" />
+    <None Include="youtube_comment.m" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="E.txt" />
